@@ -3,13 +3,13 @@
  */
 var slice = Array.prototype.slice
 
-function thunkify(callback){
-  return function(){
+function thunkify(callback) {
+  return function () {
     var args = slice.apply(arguments)
-    return function(hook){
+    return function (hook) {
       var isCalled = false
-      args.push(function(){
-        if(!isCalled){
+      args.push(function () {
+        if (!isCalled) {
           hook.apply(null, arguments)
         }
         isCalled = true
@@ -26,60 +26,60 @@ function thunkify(callback){
  * @param gen
  * @returns {$Promise|Promise|*}
  */
-function co(gen){
+function co(gen) {
   var ctx = this
   var args = slice.call(arguments, 1)
 
   return new Promise((resolve, reject) => {
-    if(typeof gen == 'function') gen = gen.call(ctx, args)
-    if(!gen || typeof gen.next != 'function') return resolve(gen)
+    if (typeof gen == 'function') gen = gen.call(ctx, args)
+    if (!gen || typeof gen.next != 'function') return resolve(gen)
 
     onFulfilled()
 
-    function onFulfilled(res){
+    function onFulfilled(res) {
       var ret
-      try{
+      try {
         ret = gen.next(res)
-      }catch(e){
+      } catch (e) {
         reject(e)
       }
 
       next(ret)
     }
 
-    function onRejected(err){
+    function onRejected(err) {
       var ret
-      try{
+      try {
         ret = gen.throw(err)
-      }catch(e){
+      } catch (e) {
         return reject(e)
       }
 
       next(ret)
     }
 
-    function next(ret){
-      if(ret.done)  return resolve(ret.value)
+    function next(ret) {
+      if (ret.done)  return resolve(ret.value)
       var value = toPromise(ret.value)
-      if(value && isPromise(value)) return value.then(onFulfilled, onRejected)
+      if (value && isPromise(value)) return value.then(onFulfilled, onRejected)
       return onRejected(new TypeError('You may only yield a function, promise, generator, array, object'))
     }
 
-    function toPromise(obj){
-      if(!obj) return obj
-      if(isPromise(obj)) return obj
-      if(isGeneratorFunction(obj) || isGenerator(obj)) return co.call(ctx, obj)
-      if(typeof obj == 'function') return thunkToPromise(obj)
-      if(Array.isArray(obj)) return Promise.all(obj.map(toPromise))
-      if(obj.constructor == Object) return objectToPromise(obj)
+    function toPromise(obj) {
+      if (!obj) return obj
+      if (isPromise(obj)) return obj
+      if (isGeneratorFunction(obj) || isGenerator(obj)) return co.call(ctx, obj)
+      if (typeof obj == 'function') return thunkToPromise(obj)
+      if (Array.isArray(obj)) return Promise.all(obj.map(toPromise))
+      if (obj.constructor == Object) return objectToPromise(obj)
       return obj
     }
 
-    function objectToPromise(obj){
+    function objectToPromise(obj) {
       var keys = Object.keys(obj)
       var result = {}
       var promise = []
-      for(var i = 0; i < keys.length; i++){
+      for (var i = 0; i < keys.length; i++) {
         var key = keys[i]
         var v = obj[key]
         result[key] = undefined
@@ -87,60 +87,60 @@ function co(gen){
           result[key] = res
         }))
       }
-      return Promise.all(promise).then(()=>{
+      return Promise.all(promise).then(() => {
         return result
       })
     }
 
-    function thunkToPromise(obj){
+    function thunkToPromise(obj) {
       return new Promise((resolve, reject) => {
         obj((err, data) => {
-          if(err) reject(err)
+          if (err) reject(err)
           resolve(data)
         })
       })
     }
 
-    function isGeneratorFunction(obj){
+    function isGeneratorFunction(obj) {
       var constructor = obj.constructor
-      if(!constructor)  return false
-      if(constructor.name == 'GeneratorFunction' || constructor.displayName == 'GeneratorFunction')  return true
+      if (!constructor)  return false
+      if (constructor.name == 'GeneratorFunction' || constructor.displayName == 'GeneratorFunction')  return true
       return false
     }
 
-    function isGenerator(obj){
-      if(typeof obj.next == 'function' && typeof obj.throw == 'function') return true
+    function isGenerator(obj) {
+      if (typeof obj.next == 'function' && typeof obj.throw == 'function') return true
       return false
     }
 
-    function isPromise(obj){
-      if(typeof obj.then == 'function') return true
+    function isPromise(obj) {
+      if (typeof obj.then == 'function') return true
       return false
     }
   })
 }
 
-function * gen1(){
+function * gen1() {
   var rtn = yield thunkify(cb => {
-    cb(null ,12)
+    cb(null, 12)
   })()
-  return rtn*2
+  return rtn * 2
 }
 
-co(function *(){
+co(function *() {
   var rt1 = yield new Promise((resolve, reject) => {
-    setTimeout(()=>{
+    setTimeout(() => {
       resolve(1)
     }, 500)
   })
 
-  var rt2 = yield thunkify((callback)=>{
+  var rt2 = yield thunkify((callback) => {
     callback(false, 2)
   })()
 
-  try{
-    yield 3;
-  }catch(e){
+  try {
+    yield 3
+  } catch (e) {
     console.log(e)
   }
 
