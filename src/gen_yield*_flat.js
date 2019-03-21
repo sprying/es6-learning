@@ -1,3 +1,4 @@
+'use strict';
 /**
  * Created by yingchun.fyc@alibaba-inc.com on 16/7/13.
  */

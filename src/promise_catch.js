@@ -1,27 +1,21 @@
 /**
  * reject未被catch，会被传递到unhandledRejection
- * throw没被catch，无法执行
+ * Promise内部throw没被catch，会被传递到unhandledRejection，其它不做任何处理
  * throw后有catch，还有then，但是then应该是catch生成的默认resolve的promise
  */
 new Promise((resolve, reject) => {
-    throw new Error('err-1')
-    console.log('after throw')
-    throw new Error('err-2')
+    //reject(new Error('err'))
+    //setTimeout(() => {
+        throw new Error('err-1')
+    //}, 0)
     //resolve('done')
-    reject(new Error('err'))
 })
-    .catch(err => console.log('err1: ', err))
-    //.catch(err => console.log('err2: ', err))
+    .catch(err => console.log('err: ', err))
     .then((data) => {
         console.log('then: ' + data)
-        setTimeout(() => {
-            //throw new Error()
-        }, 100)
     })
-    //.catch(err => console.log('err3: ', err))
-    //.catch(err => console.log('err4: ', err))
 process.on('unhandledRejection', function (err, p) {
-    console.error(err.stack)
+    //console.error(err.stack)
 });
 
 var someAsyncThing = function () {
@@ -31,6 +25,8 @@ var someAsyncThing = function () {
     });
 };
 
+// 注意与上面对比的执行时间
+///*
 someAsyncThing()
     .catch(function (error) {
         console.log('oh no', error);
@@ -38,3 +34,4 @@ someAsyncThing()
     .then(function () {
         console.log('carry on');
     });
+    //*/

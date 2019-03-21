@@ -1,17 +1,16 @@
 /**
- * Created by yingchun.fyc@alibaba-inc.com on 16/7/13.
+ * 注意执行顺序
  */
-setTimeout(()=>console.log(4),0)
+setTimeout(()=>console.log(1),0)
 new Promise(function (resolve, reject) {
-    console.log(1);
-    //x/2;
+    console.log(2);
+    x/2;
     resolve();
 }).then(function () {
-    console.log(2)
+    console.log(3)
     //throw new Error('err')
 },function(err){
     console.log(err)
 });
-console.log(3)
-
+console.log(4)
 

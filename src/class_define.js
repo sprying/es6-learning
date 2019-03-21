@@ -6,9 +6,12 @@ class Person{
     constructor(name){
         this.name = name
     }
-    name;
+    //name // es6不支持
     speak(){
-        console.log(this.name + ' sayed')
+        console.log(this.name + ' said')
+    }
+    excThis = () => {
+        console.log(this.name)
     }
     [action](){
         console.log(this.name + ' is thinking over the life')
@@ -27,6 +30,7 @@ Object.assign(Person.prototype, {
 
 let sprying = new Person('sprying')
 sprying.think()
+sprying.excThis.call(undefined)
 sprying.watch()
 
 
@@ -55,24 +59,25 @@ class Sp{
 let sp = new Sp()
 sp.foo('hello')
 
-class Men extends Person{
+class Man extends Person{
     constructor(name){
         super(name)
-        this.sex = 'men'
+        this.sex = 'man'
     }
     speak(){
         console.log("I'm a man.")
         super.speak()
     }
-    static time = '20 minutes'
+    //static time = '20 minutes' // es6不支持
 }
-let xiaoming = new Men('xiaoming')
+let xiaoming = new Man('xiaoming')
 xiaoming.speak()
-Men.putCount()
-console.log(Men.time)
+Man.putCount()
+console.log(Man.time)
 
 console.log(xiaoming instanceof Person)
-console.log(xiaoming instanceof Men)
+console.log(xiaoming instanceof Man)
 
-let Lucy = class Women{}
+let Lucy = class Woman{}
 console.log(Lucy.name)
+

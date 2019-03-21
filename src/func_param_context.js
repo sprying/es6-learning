@@ -1,3 +1,4 @@
+'use strict';
 /**
  * Created by yingchun.fyc@alibaba-inc.com on 16/7/11.
  */
@@ -8,7 +9,7 @@ function f(y = x) {
 
 try{f()}catch(e){console.log(e)} // ReferenceError: x is not defined
 
-//let foo = 'outer';
+let foo = 'outer';
 
 function bar(func = () => foo) {
     let foo = 'inner';

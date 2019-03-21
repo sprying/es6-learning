@@ -1,6 +1,7 @@
 {
   "name": "application-name",
   "version": "0.0.1",
+  "node": "6.9.0",
   "scripts": {
     "build": "babel src  --out-dir lib"
   },
